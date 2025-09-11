@@ -45,4 +45,26 @@ if [ ! -e "$rutaArchivo" ]; then
     exit 1
 fi
 
+# Verificamos si el grupo especificado existe en el sistema.
+# NOTA: Usamos 'getent group' para obtener la lista de grupos existentes, y 'grep' para buscar el grupo especificado.
+if [[ -n $(getent group | grep "^$grupo:") ]]; then
+    # Si el grupo existe, se muestra un mensaje.
+    echo "El grupo '$grupo' ya existe en el sistema."
+else
+    # Si el grupo no existe, se agrega al sistema.
+    groupadd "$grupo"
+fi
+
+# Verificamos si el usuario especificado existe en el sistema.
+# NOTA: Usamos 'getent passwd' para obtener la lista de usuarios existentes, y 'grep' para buscar el usuario especificado.
+if [[ -n $(getent passwd | grep "^$usuario:") ]]; then
+    # Si el usuario existe, se muestra un mensaje y se asigna al grupo especificado.
+    echo "El usuario '$usuario' ya existe en el sistema."
+    usermod -aG "$grupo" "$usuario"
+else
+    # Si el usuario no existe, se agrega al sistema y se asigna al grupo especificado.
+    useradd "$usuario"
+    usermod -aG "$grupo" "$usuario"
+fi
+
 echo ""
