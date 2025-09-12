@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # EJERCICIO 1 - Scripting, usuarios y permisos.
-# Este script permite modificar la pertenencia de un archivo y los permisos asociados a usuarios y grupos.
+# Este script permite modificar los usuarios, grupos y permisos asociados a un archivo.
 
 # Definimos una función de ayuda para mostrar la guía de uso del script.
 help() {
@@ -49,6 +49,7 @@ fi
 # NOTA: Usamos 'getent group' para obtener la lista de grupos existentes, y 'grep' para buscar el grupo especificado.
 if [[ -n $(getent group | grep "^$grupo:") ]]; then
     # Si el grupo existe, se muestra un mensaje.
+    echo ""
     echo "AVISO: El grupo '$grupo' ya existe en el sistema."
 else
     # Si el grupo no existe, se agrega al sistema.
@@ -59,6 +60,7 @@ fi
 # NOTA: Usamos 'getent passwd' para obtener la lista de usuarios existentes, y 'grep' para buscar el usuario especificado.
 if [[ -n $(getent passwd | grep "^$usuario:") ]]; then
     # Si el usuario existe, se muestra un mensaje y se asigna al grupo especificado.
+    echo ""
     echo "AVISO: El usuario '$usuario' ya existe en el sistema."
     usermod -aG "$grupo" "$usuario"
 else
