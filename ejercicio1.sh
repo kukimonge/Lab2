@@ -49,7 +49,7 @@ fi
 # NOTA: Usamos 'getent group' para obtener la lista de grupos existentes, y 'grep' para buscar el grupo especificado.
 if [[ -n $(getent group | grep "^$grupo:") ]]; then
     # Si el grupo existe, se muestra un mensaje.
-    echo "El grupo '$grupo' ya existe en el sistema."
+    echo "AVISO: El grupo '$grupo' ya existe en el sistema."
 else
     # Si el grupo no existe, se agrega al sistema.
     groupadd "$grupo"
@@ -59,7 +59,7 @@ fi
 # NOTA: Usamos 'getent passwd' para obtener la lista de usuarios existentes, y 'grep' para buscar el usuario especificado.
 if [[ -n $(getent passwd | grep "^$usuario:") ]]; then
     # Si el usuario existe, se muestra un mensaje y se asigna al grupo especificado.
-    echo "El usuario '$usuario' ya existe en el sistema."
+    echo "AVISO: El usuario '$usuario' ya existe en el sistema."
     usermod -aG "$grupo" "$usuario"
 else
     # Si el usuario no existe, se agrega al sistema y se asigna al grupo especificado.
@@ -67,4 +67,16 @@ else
     usermod -aG "$grupo" "$usuario"
 fi
 
+# Asignamos el archivo al usuario y grupo especificado, utilizando 'chown'.
+chown "$usuario":"$grupo" "$rutaArchivo"
+
+# Asignamos permisos de lectura, escritura y ejecución para los diferentes tipos de usuarios, utilizando 'chmod' con notación octal.
+chmod 740 "$rutaArchivo"
+
+# Mostramos la información del archivo, incluyendo el propietario, grupo y permisos.
+echo ""
+echo "Información del archivo '$rutaArchivo':"
+echo "  Propietario: $usuario"
+echo "  Grupo: $grupo"
+echo "  Tipo de archivo y permisos: $(ls -l "$rutaArchivo" | awk '{print $1}')"
 echo ""
