@@ -71,8 +71,51 @@ log="log_$(date +%Y-%m-%d)_$procesoPrincipal.txt"
 echo ""
 echo "CONSUMO DE CPU Y MEMORIA DEL PROCESO '$procesoPrincipal' (PID: $pid)" | tee "$log"
 echo "" | tee -a "$log"
-echo "FECHA Y HORA        | %CPU | %MEM |" | tee -a "$log"
-echo "-----------------------------------" | tee -a "$log"
+echo "FECHA Y HORA          |  %CPU  |  %MEM  |" | tee -a "$log"
+echo "-----------------------------------------" | tee -a "$log"
+
+# Definimos una función para generar gráficos una vez se termina (o interrumpe) la ejecución del script.
+graph() {
+    # Verificamos si el archivo de log tiene datos para poder generar los gráficos.
+    # NOTA: Si el archivo tiene menos de 6 líneas (4 de cabecera y 2 de registros), el comando 'gnuplot' no puede ejecutarse correctamente, ya que se requieren al menos 2 puntos de datos para graficar.
+    if [[ $(wc -l < "$log") -lt 6 ]]; then
+        echo ""
+        echo "ADVERTENCIA: No se pudo generar el gráfico de consumo de CPU y memoria porque el archivo log necesita al menos 2 registros válidos."
+        echo ""
+        exit 1
+    fi
+
+    # Verificamos si 'gnuplot' está instalado en el sistema.
+    if [[ -z $(command -v gnuplot 2>/dev/null) ]]; then
+        echo ""
+        echo "ADVERTENCIA: No se pudo generar el gráfico de consumo de CPU y memoria porque 'gnuplot' no está instalado."
+        echo ""
+        exit 1
+    else
+        # Generamos el gráfico de consumo de CPU y memoria usando 'gnuplot'.
+        gnuplot -p << EOF
+        set terminal png size 1200,800
+        set output 'consumo_cpu_memoria_$procesoPrincipal.png'
+        set title 'Consumo de CPU y memoria - $procesoPrincipal (PID: $pid)'
+        set xlabel 'Tiempo'
+        set ylabel 'Porcentaje (%)'
+        set xdata time
+        set timefmt '%Y-%m-%d_%H:%M:%S'
+        set format x '%H:%M:%S'
+        set grid
+        set key
+        plot "$log" using 1:2 with lines title 'CPU (%)', \
+             "$log" using 1:3 with lines title 'Memoria (%)'
+EOF
+        echo ""
+        echo "Puede consultar el gráfico de consumo en el archivo 'consumo_cpu_memoria_$procesoPrincipal.png'"
+        echo ""
+        exit 0
+    fi
+}
+
+# Usamos el comando 'trap' para capturar señales de interrupción (SIGINT y SIGTERM) en el script y llamar a la función 'graph' para generar gráficos antes de salir.
+trap graph SIGINT SIGTERM
 
 # Usamos un 'while' loop para monitorear el consumo de CPU y memoria del proceso cada 10 segundos.
 # NOTA: Usamos 'kill -0' para verificar si el proceso sigue en ejecución.
