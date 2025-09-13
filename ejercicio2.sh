@@ -24,19 +24,16 @@ fi
 # NOTA: Usamos "$*" en lugar de "$1" u otras estructuras para permitir la ejecución de procesos más complejos o con opciones.
 proceso="$*"
 
-# Extraemos el nombre del proceso principal, para usarlo en el nombre del archivo de log.
+# Si el usuario usa 'sudo' pero no especifica ningún proceso, mostramos un mensaje de error y detenemos el script (a través de un código de salida).
+if [ "$proceso" = "sudo" ]; then
+    echo ""
+    echo "ERROR: Debe especificar el nombre de un proceso para monitorear después de 'sudo'."
+    help
+    exit 1
+# Si el usuario usa 'sudo' junto a otro proceso, extraemos el nombre del proceso principal para usarlo en el nombre del archivo de log.
 # NOTA: Usamos la expresión regular para detectar si el proceso se ejecuta con 'sudo' y extraemos el nombre correcto.
-if [[ "$proceso" =~ ^sudo[[:space:]] ]]; then
+elif [[ "$proceso" =~ ^sudo[[:space:]] ]]; then
     procesoPrincipal=$(basename "$(echo "$*" | awk '{print $2}')")
-
-    # Si el usuario usa 'sudo' pero no especifica ningún proceso, mostramos un mensaje de error y detenemos el script (a través de un código de salida).
-    if [[ -z "$procesoPrincipal" ]]; then
-        echo ""
-        echo "ERROR: Debe especificar el nombre de un proceso para monitorear después de 'sudo'."
-        help
-        exit 1
-    fi
-
 else
     procesoPrincipal=$(basename "$(echo "$*" | awk '{print $1}')")
 fi
@@ -63,7 +60,7 @@ log="log_$(date +%Y-%m-%d)_$procesoPrincipal.txt"
 # Configuramos el archivo log para registrar el consumo de CPU y memoria mientras ejecutamos el proceso.
 # NOTA: Usamos 'tee' para mostrar la información en pantalla y guardarla en el archivo de log al mismo tiempo.
 echo ""
-echo "CONSUMO DE CPU Y MEMORIA DEL PROCESO '$proceso' (PID: $pid):" | tee "$log"
+echo "CONSUMO DE CPU Y MEMORIA DEL PROCESO '$procesoPrincipal' (PID: $pid):" | tee "$log"
 echo "" | tee -a "$log"
 echo "FECHA Y HORA        | %CPU | %MEM |" | tee -a "$log"
 echo "-----------------------------------" | tee -a "$log"
