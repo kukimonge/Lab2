@@ -1,0 +1,13 @@
+[Unit]
+Description=Servicio de Monitoreo de Cambios en /Home
+After=network.target
+
+[Service]
+Type=simple
+ExecStart=/bin/bash /home/k/Code/Labs/Lab2/ejercicio3.sh
+WorkingDirectory=/home/k/Code/Labs/Lab2
+Restart=always
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target

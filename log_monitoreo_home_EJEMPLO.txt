@@ -1,0 +1,19 @@
+MONITOREO DEL DIRECTORIO /home - 13/09/2025
+
+FECHA Y HORA          | ARCHIVO                      |  EVENTO  
+----------------------+------------------------------+----------
+13/09/2025 03:25:19    /home/k/.local/state/lesshsQ  CREATE
+13/09/2025 03:25:19    /home/k/.local/state/lesshsQ  MODIFY
+13/09/2025 03:25:49    /home/k/.local/share/gnome-shell/.goutputstream-23QVC3  CREATE
+13/09/2025 03:25:49    /home/k/.local/share/gnome-shell/.goutputstream-23QVC3  MODIFY
+13/09/2025 03:27:45    /home/k/Code/Labs/Lab2/prueba.txt  CREATE
+13/09/2025 03:27:56    /home/k/Code/Labs/Lab2/prueba.txt  DELETE
+13/09/2025 03:30:55    /home/k/.local/state/lesshsQ  CREATE
+13/09/2025 03:30:55    /home/k/.local/state/lesshsQ  MODIFY
+13/09/2025 03:31:54    /home/k/.local/state/lesshsQ  CREATE
+13/09/2025 03:31:54    /home/k/.local/state/lesshsQ  MODIFY
+13/09/2025 03:33:59    /home/k/Code/Labs/Lab2/monitoreo_home.service  DELETE
+13/09/2025 03:34:39    /home/k/.local/state/lesshsQ  CREATE
+13/09/2025 03:34:39    /home/k/.local/state/lesshsQ  MODIFY
+13/09/2025 03:35:45    /home/k/Code/Labs/Lab2/monitoreo_home.service  CREATE
+13/09/2025 03:35:45    /home/k/Code/Labs/Lab2/monitoreo_home.service  MODIFY
