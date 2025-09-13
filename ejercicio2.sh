@@ -20,7 +20,7 @@ if [ "$#" -eq 0 ]; then
     exit 1
 fi
 
-# Configuramos variables local para el proceso especificado por el usuario y el archivo de log donde vamos a registrar los detalles.
+# Configuramos una variable local para el proceso especificado por el usuario y el archivo de log donde vamos a registrar los detalles.
 # NOTA: Usamos "$*" en lugar de "$1" u otras estructuras para permitir la ejecución de procesos más complejos o con opciones.
 proceso="$*"
 
@@ -41,12 +41,10 @@ else
     procesoPrincipal=$(basename "$(echo "$*" | awk '{print $1}')")
 fi
 
-# Configuramos el nombre del archivo de log, incluyendo la fecha y hora actuales.
-log="log_$(date +%Y-%m-%d_%H-%M-%S)_$proceso.txt"
-
 # Ejecutamos el proceso indicado por el usuario, en segundo plano.
-$proceso &
-# Guardamos el PID del proceso en una variable local.
+$proceso & 2>/dev/null
+
+# Guardamos el PID del proceso en curso en una variable local.
 pid=$!
 
 # Configuramos un archivo de log con encabezados para registrar el consumo de CPU y memoria del proceso que se va a monitorear.
