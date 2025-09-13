@@ -42,7 +42,7 @@ else
 fi
 
 # Ejecutamos el proceso indicado por el usuario, en segundo plano.
-$proceso & 2>/dev/null
+$proceso >/dev/null 2>&1 &
 
 # Guardamos el PID del proceso en curso en una variable local.
 pid=$!
@@ -77,8 +77,15 @@ while kill -0 "$pid" 2>/dev/null; do
     consumoMEM=$(echo $consumo | awk '{print $2}')
 
     # Registramos la fecha y hora actuales junto con el consumo de CPU y memoria en elarchivo de log.
-    echo "$(date +%Y-%m-%d\ %H:%M:%S) | $consumoCPU  | $consumoMEM  |" | tee -a "$log"
+    echo "$(date +%Y-%m-%d\ %H:%M:%S) | $consumoCPU | $consumoMEM |" | tee -a "$log"
 
-    # Esperamos 10 segundos antes de la siguiente iteración.
-    sleep 10
+    # Esperamos 5 segundos antes de la siguiente iteración.
+    sleep 5
 done
+
+# Cuando el proceso finaliza, mostramos un mensaje indicando que el proceso ha terminado.
+echo ""
+echo "El proceso '$proceso' (PID: $pid) ha finalizado."
+echo "El consumo de CPU y memoria se ha registrado en el archivo '$log'"
+echo ""
+exit 0
