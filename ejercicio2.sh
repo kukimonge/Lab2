@@ -7,8 +7,7 @@
 help() {
     echo ""
     echo "Este script permite monitorear el consumo de CPU y memoria de un proceso específico."
-    echo ""
-    echo "Uso: $0 [nombre_proceso]"
+    echo "Uso: $0 [comando]"
     echo ""
 }
 
@@ -34,24 +33,34 @@ if [ "$proceso" = "sudo" ]; then
 # NOTA: Usamos la expresión regular para detectar si el proceso se ejecuta con 'sudo' y extraemos el nombre correcto.
 elif [[ "$proceso" =~ ^sudo[[:space:]] ]]; then
     procesoPrincipal=$(basename "$(echo "$*" | awk '{print $2}')")
+# Si el usuario no usa 'sudo', extraemos el nombre del proceso principal directamente.
 else
     procesoPrincipal=$(basename "$(echo "$*" | awk '{print $1}')")
 fi
 
 # Ejecutamos el proceso indicado por el usuario, en segundo plano.
+# NOTA: Usamos >/dev/null 2>&1 para manejar los errores manualmente y evitar que se muestren mensajes adicionales.
 $proceso >/dev/null 2>&1 &
 
 # Guardamos el PID del proceso en curso en una variable local.
 pid=$!
 
-# Verificamos si el proceso se inició correctamente tras dar tiempo para que se inicialice.
-# NOTA: Usamos 2>/dev/null para evitar que se muestre un mensaje de error adicional si el proceso no se pudo iniciar.
-sleep 1
+# Validamos la ejecución del proceso tras dar tiempo para que se inicialice.
+sleep 0.2
 if ! kill -0 "$pid" 2>/dev/null; then
-    echo ""
-    echo "ERROR: El proceso '$proceso' no se pudo ejecutar."
-    help
-    exit 1
+    wait "$pid" 2>/dev/null
+    if [ $? -eq 0 ]; then
+        echo ""
+        echo "El proceso '$procesoPrincipal' terminó justo después de iniciarse."
+        echo "SUGERENCIA: Use este script para monitorear procesos de mayor duración."
+        help
+        exit 0
+    else
+        echo ""
+        echo "ERROR: El proceso '$procesoPrincipal' no se pudo ejecutar."
+        help
+        exit 1
+    fi
 fi
 
 # Configuramos el nombre del archivo de log, incluyendo la fecha actual.
@@ -60,7 +69,7 @@ log="log_$(date +%Y-%m-%d)_$procesoPrincipal.txt"
 # Configuramos el archivo log para registrar el consumo de CPU y memoria mientras ejecutamos el proceso.
 # NOTA: Usamos 'tee' para mostrar la información en pantalla y guardarla en el archivo de log al mismo tiempo.
 echo ""
-echo "CONSUMO DE CPU Y MEMORIA DEL PROCESO '$procesoPrincipal' (PID: $pid):" | tee "$log"
+echo "CONSUMO DE CPU Y MEMORIA DEL PROCESO '$procesoPrincipal' (PID: $pid)" | tee "$log"
 echo "" | tee -a "$log"
 echo "FECHA Y HORA        | %CPU | %MEM |" | tee -a "$log"
 echo "-----------------------------------" | tee -a "$log"
@@ -73,8 +82,8 @@ while kill -0 "$pid" 2>/dev/null; do
     consumoCPU=$(echo $consumo | awk '{print $1}')
     consumoMEM=$(echo $consumo | awk '{print $2}')
 
-    # Registramos la fecha y hora actuales junto con el consumo de CPU y memoria en elarchivo de log.
-    echo "$(date +%Y-%m-%d\ %H:%M:%S) | $consumoCPU | $consumoMEM |" | tee -a "$log"
+    # Registramos la fecha y hora actuales junto con el consumo de CPU y memoria en el archivo de log.
+    echo "$(date +%Y-%m-%d_%H:%M:%S)      $consumoCPU      $consumoMEM" | tee -a "$log"
 
     # Esperamos 5 segundos antes de la siguiente iteración.
     sleep 5
@@ -83,6 +92,8 @@ done
 # Cuando el proceso finaliza, mostramos un mensaje indicando que el proceso ha terminado.
 echo ""
 echo "El proceso '$proceso' (PID: $pid) ha finalizado."
-echo "El consumo de CPU y memoria se ha registrado en el archivo '$log'"
-echo ""
+echo "El consumo de CPU y memoria se registró en el archivo '$log'"
+
+# Generamos los gráficos de consumo de CPU y memoria.
+graph
 exit 0
