@@ -88,7 +88,7 @@ graph() {
     # Verificamos si 'gnuplot' está instalado en el sistema.
     if [[ -z $(command -v gnuplot 2>/dev/null) ]]; then
         echo ""
-        echo "ADVERTENCIA: No se pudo generar el gráfico de consumo de CPU y memoria porque 'gnuplot' no está instalado."
+        echo "ERROR: No se pudo generar el gráfico de consumo de CPU y memoria porque 'gnuplot' no está instalado."
         echo ""
         exit 1
     else
