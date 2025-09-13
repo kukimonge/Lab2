@@ -77,7 +77,7 @@ chmod 740 "$rutaArchivo"
 
 # Mostramos la información del archivo, incluyendo el propietario, grupo y permisos.
 echo ""
-echo "Información del archivo '$rutaArchivo':"
+echo "Información del archivo '$(basename $rutaArchivo)':"
 echo "  Propietario: $usuario"
 echo "  Grupo: $grupo"
 echo "  Tipo de archivo y permisos: $(ls -l "$rutaArchivo" | awk '{print $1}')"
