@@ -117,7 +117,7 @@ EOF
 # Usamos el comando 'trap' para capturar señales de interrupción (SIGINT y SIGTERM) en el script y llamar a la función 'graph' para generar gráficos antes de salir.
 trap graph SIGINT SIGTERM
 
-# Usamos un 'while' loop para monitorear el consumo de CPU y memoria del proceso cada 10 segundos.
+# Usamos un 'while' loop para monitorear el consumo de CPU y memoria del proceso cada 5 segundos.
 # NOTA: Usamos 'kill -0' para verificar si el proceso sigue en ejecución.
 while kill -0 "$pid" 2>/dev/null; do
     # Extraemos el consumo de CPU y memoria del proceso usando 'ps' y 'awk'.
