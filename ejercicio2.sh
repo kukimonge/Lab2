@@ -19,7 +19,7 @@ if [ "$#" -eq 0 ]; then
     exit 1
 fi
 
-# Configuramos una variable local para el proceso especificado por el usuario y el archivo de log donde vamos a registrar los detalles.
+# Configuramos una variable local para el proceso especificado por el usuario.
 # NOTA: Usamos "$*" en lugar de "$1" u otras estructuras para permitir la ejecución de procesos más complejos o con opciones.
 proceso="$*"
 
